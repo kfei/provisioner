@@ -50,9 +50,7 @@
         <v-icon v-html="miniVariant ? 'chevron_right' : 'chevron_left'"></v-icon>
       </v-btn>
       <v-spacer></v-spacer>
-      <v-btn icon>
-        <v-icon>menu</v-icon>
-      </v-btn>
+      <ws-indicator />
     </v-toolbar>
 
     <v-content class="grey lighten-5">
@@ -63,23 +61,46 @@
 </template>
 
 <script>
+import WsIndicator from '@/components/WsIndicator'
+import ws from './ws'
 
 export default {
   name: 'App',
+
+  components: { WsIndicator },
+
   data () {
     return {
       appName: require('../package.json').name,
-      links: [{
-        icon: 'attach_money',
-        title: 'Coupon',
-        route: 'coupon'
-      }, {
-        icon: 'info',
-        title: 'About',
-        route: 'about'
-      }],
+
+      links: [
+        {
+          icon: 'attach_money',
+          title: 'Coupon',
+          route: 'coupon'
+        },
+        {
+          icon: 'info',
+          title: 'About',
+          route: 'about'
+        }
+      ],
+
       miniVariant: true
     }
+  },
+
+  created () {
+    ws.on('update-stock', ({ payload }) => {
+      this.$store.commit('SetAvailable', {
+        count: payload.availableCoupon.count
+      })
+    })
+    ws.init()
+  },
+
+  beforeDestroy () {
+    ws.close()
   }
 }
 </script>

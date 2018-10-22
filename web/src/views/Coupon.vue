@@ -4,12 +4,12 @@
       <v-flex xs12>
         <div class="available d-flex" style="flex-direction: column;">
           <div class="description headline mt-5 grey--text">Coupons Available:</div>
-          <div class="coupon primary--text">{{ count }}</div>
+          <div class="coupon primary--text">{{ available }}</div>
         </div>
       </v-flex>
       <v-flex xs12>
         <div class="request">
-          <v-btn color="primary" large>Give Me A Coupon</v-btn>
+          <v-btn color="primary" large @click="requestCoupon">Give Me A Coupon</v-btn>
         </div>
       </v-flex>
     </v-layout>
@@ -17,10 +17,24 @@
 </template>
 
 <script>
+import { mapState } from 'vuex'
+import ws from '@/ws'
+
 export default {
-  data () {
-    return {
-      count: 5566
+  computed: {
+    ...mapState({
+      'available': state => state.available
+    })
+  },
+
+  methods: {
+    requestCoupon () {
+      ws.send(JSON.stringify({
+        command: 'request-coupon',
+        requestCoupon: {
+          count: 1
+        }
+      }))
     }
   }
 }
