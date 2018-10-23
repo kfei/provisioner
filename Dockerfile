@@ -13,6 +13,7 @@ RUN yarn run build
 FROM golang:$GOVER AS backend
 ARG PROJECTNAME
 ARG GOREPO
+ENV CGO_ENABLED=0
 RUN go get -v "github.com/tsaikd/gobuilder"
 COPY . /go/src/$GOREPO
 WORKDIR /go/src/$GOREPO
@@ -20,10 +21,10 @@ RUN gobuilder --all --check --test --debug
 
 FROM alpine:3.8
 ARG PROJECTNAME
-ENV PROJECTNAME $PROJECNAME
+ENV PROJECTNAME=$PROJECTNAME
 ARG GOREPO
 RUN apk add --no-cache curl
 COPY --from=web /$PROJECTNAME/web/dist /$PROJECTNAME/web/dist/
 COPY --from=backend /go/src/$GOREPO/$PROJECTNAME /$PROJECTNAME/
 WORKDIR /$PROJECTNAME
-CMD ["./$PROJECTNAME"]
+CMD ./$PROJECTNAME --addr=0.0.0.0:8080
