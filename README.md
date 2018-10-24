@@ -3,7 +3,7 @@
 To build and test:
 
 ```
-docker built . -t provisioner
+docker build . -t provisioner
 ```
 
 
